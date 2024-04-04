@@ -1,0 +1,46 @@
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
+import ebooklib
+from ebooklib import fb2
+from ebooklib.utils import convert
+
+def convert_fb2_to_mobi():
+    # Запрос исходного FB2 файла через диалоговое окно
+    input_file_path = filedialog.askopenfilename(title="Выберите файл FB2",
+                                                 filetypes=[("FB2 Files", "*.fb2")])
+    if not input_file_path:
+        return
+
+    # Определение пути для сохранения MOBI файла
+    output_file_path = filedialog.asksaveasfilename(title="Выберите место для сохранения файла MOBI",
+                                                    defaultextension=".mobi",
+                                                    filetypes=[("MOBI Files", "*.mobi")])
+    if not output_file_path:
+        return
+
+    try:
+        # Открытие и чтение файла FB2
+        with open(input_file_path, 'rb') as fb2_file:
+            fb2_content = fb2_file.read()
+
+        # Создание объекта книги из содержимого FB2
+        fb2_book = fb2.read_fb2_string(fb2_content)
+
+        # Конвертация в MOBI
+        convert(fb2_book, outputfile=output_file_path, formatname='mobi')
+
+        messagebox.showinfo("Готово", "Конвертация завершена!")
+    except Exception as e:
+        messagebox.showerror("Ошибка", f"Произошла ошибка при конвертации: {str(e)}")
+
+# Создание окна приложения
+root = tk.Tk()
+root.title("Конвертер FB2 в MOBI")
+
+# Создание кнопки для запуска конвертации
+convert_button = tk.Button(root, text="Конвертировать в MOBI", command=convert_fb2_to_mobi)
+convert_button.pack(pady=20)
+
+# Запуск главного цикла приложения
+root.mainloop()
